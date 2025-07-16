@@ -1,7 +1,5 @@
 # Numerical Methods Calculator Suite
 
-[![Deploy to GitHub Pages](https://github.com/Rohit-Solanki-6105/interactive_methods_nm/actions/workflows/pages.yml/badge.svg)](https://github.com/Rohit-Solanki-6105/interactive_methods_nm/actions/workflows/pages.yml)
-
 An interactive web-based calculator suite for numerical root-finding methods including:
 
 - **Bisection Method** - Reliable bracketing method with guaranteed convergence
