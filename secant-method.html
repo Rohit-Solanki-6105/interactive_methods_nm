@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secant Method for Root Finding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c44569 0%, #f8b500 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .method-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 30px;
+            color: #856404;
+        }
+
+        .formula {
+            background: #e8f4fd;
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .input-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-section {
+            padding: 30px;
+            display: none;
+        }
+
+        .results-header {
+            background: #ffe8e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .results-header h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .results-info {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: linear-gradient(135deg, #c44569 0%, #f8b500 100%);
+            color: white;
+            padding: 15px 8px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid #c44569;
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #eee;
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #ffe8e6;
+        }
+
+        .convergence-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #155724;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #721c24;
+        }
+
+        .function-help {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-section {
+                padding: 20px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+
+            .method-info {
+                margin: 10px 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 Secant Method</h1>
+            <p>Advanced Root Finding Calculator</p>
+        </div>
+
+        <div class="method-info">
+            <h3>🔍 About the Secant Method</h3>
+            <p>The secant method is an iterative root-finding algorithm that uses a succession of roots of secant lines to approximate a root of a function. It's faster than the bisection method but doesn't require the derivative like Newton's method.</p>
+            
+            <div class="formula">
+                c = (a × f(b) - b × f(a)) / (f(b) - f(a))
+            </div>
+            
+            <p><strong>Advantages:</strong> Faster convergence than bisection method, doesn't require derivative calculation.</p>
+            <p><strong>Requirements:</strong> Two initial guesses (a and b) near the root.</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="function">Function f(x):</label>
+                    <input type="text" id="function" placeholder="e.g., x^3 - x - 1" value="x^3 - x - 1">
+                </div>
+                <div class="input-group">
+                    <label for="a">Initial Guess (a):</label>
+                    <input type="number" id="a" placeholder="e.g., 1" value="1" step="any">
+                </div>
+                <div class="input-group">
+                    <label for="b">Initial Guess (b):</label>
+                    <input type="number" id="b" placeholder="e.g., 1.5" value="1.5" step="any">
+                </div>
+                <div class="input-group">
+                    <label for="tolerance">Tolerance (E):</label>
+                    <input type="number" id="tolerance" placeholder="e.g., 0.001" value="0.001" step="any">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateSecant()">🚀 Calculate Root</button>
+            
+            <div class="function-help">
+                <strong>Supported Functions:</strong> Use x^2 for x², sin(x), cos(x), tan(x), ln(x), log(x), sqrt(x), exp(x), abs(x)
+                <br><strong>Examples:</strong> x^3 - x - 1, sin(x) - x/2, x^2 - 4, ln(x) - 1
+                <br><strong>Note:</strong> Choose a and b close to the expected root for better convergence.
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h3 id="resultsTitle">Secant Method Results</h3>
+                <div class="results-info" id="resultsInfo"></div>
+            </div>
+            
+            <div class="table-container">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Iteration</th>
+                            <th>a</th>
+                            <th>b</th>
+                            <th>f(a)</th>
+                            <th>f(b)</th>
+                            <th>c</th>
+                            <th>f(c)</th>
+                            <th>|c<sub>k</sub> - c<sub>k-1</sub>|</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="convergenceInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to safely evaluate mathematical expressions
+        function evaluateFunction(funcStr, x) {
+            try {
+                // Replace x with the actual value
+                let expression = funcStr.replace(/x/g, `(${x})`);
+                
+                // Replace mathematical notations
+                expression = expression.replace(/\^/g, '**'); // Exponentiation
+                expression = expression.replace(/sin/g, 'Math.sin');
+                expression = expression.replace(/cos/g, 'Math.cos');
+                expression = expression.replace(/tan/g, 'Math.tan');
+                expression = expression.replace(/ln/g, 'Math.log');
+                expression = expression.replace(/log/g, 'Math.log10');
+                expression = expression.replace(/sqrt/g, 'Math.sqrt');
+                expression = expression.replace(/exp/g, 'Math.exp');
+                expression = expression.replace(/abs/g, 'Math.abs');
+                
+                // Use Function constructor for safer evaluation
+                const func = new Function('Math', `return ${expression}`);
+                return func(Math);
+            } catch (error) {
+                throw new Error('Invalid function expression');
+            }
+        }
+
+        function calculateSecant() {
+            try {
+                // Get input values
+                const funcStr = document.getElementById('function').value.trim();
+                const a = parseFloat(document.getElementById('a').value);
+                const b = parseFloat(document.getElementById('b').value);
+                const epsilon = parseFloat(document.getElementById('tolerance').value);
+
+                // Validate inputs
+                if (!funcStr) throw new Error('Please enter a function');
+                if (isNaN(a) || isNaN(b) || isNaN(epsilon)) throw new Error('Please enter valid numbers');
+                if (a === b) throw new Error('Initial guesses a and b must be different');
+                if (epsilon <= 0) throw new Error('Tolerance must be positive');
+
+                // Run secant method
+                const iterations = secantMethod(funcStr, a, b, epsilon);
+                
+                // Display results
+                displayResults(funcStr, a, b, epsilon, iterations);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function secantMethod(funcStr, a, b, epsilon, maxIterations = 100) {
+            const iterations = [];
+            let aPrev = a;
+            let bCurr = b;
+
+            for (let i = 0; i < maxIterations; i++) {
+                // Evaluate function at current points
+                const faPrev = evaluateFunction(funcStr, aPrev);
+                const fbCurr = evaluateFunction(funcStr, bCurr);
+
+                // Check if denominator is zero (would cause division by zero)
+                if (Math.abs(fbCurr - faPrev) < 1e-15) {
+                    throw new Error('Division by zero: f(b) - f(a) is too small. Try different initial guesses.');
+                }
+
+                // Calculate next point using secant formula
+                const c = (aPrev * fbCurr - bCurr * faPrev) / (fbCurr - faPrev);
+                const fc = evaluateFunction(funcStr, c);
+
+                // Calculate error
+                const error = Math.abs(c - bCurr);
+
+                // Store iteration data
+                const iterationData = {
+                    iteration: i + 1,
+                    a: aPrev,
+                    b: bCurr,
+                    fa: faPrev,
+                    fb: fbCurr,
+                    c: c,
+                    fc: fc,
+                    error: error,
+                    converged: false
+                };
+
+                iterations.push(iterationData);
+
+                // Check for convergence
+                if (error < epsilon || Math.abs(fc) < epsilon) {
+                    iterationData.converged = true;
+                    iterationData.root = c;
+                    iterationData.rootValue = fc;
+                    break;
+                }
+
+                // Update for next iteration
+                aPrev = bCurr;
+                bCurr = c;
+            }
+
+            return iterations;
+        }
+
+        function displayResults(funcStr, a, b, epsilon, iterations) {
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+
+            // Update results header
+            document.getElementById('resultsTitle').textContent = `Secant Method Results for f(x) = ${funcStr}`;
+            document.getElementById('resultsInfo').innerHTML = `
+                <strong>Initial guesses:</strong> a = ${a}, b = ${b}<br>
+                <strong>Tolerance (E):</strong> ${epsilon}<br>
+                <strong>Total iterations:</strong> ${iterations.length}
+            `;
+
+            // Populate table
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            iterations.forEach((iter) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${iter.iteration}</td>
+                    <td>${iter.a.toFixed(6)}</td>
+                    <td>${iter.b.toFixed(6)}</td>
+                    <td>${iter.fa.toFixed(6)}</td>
+                    <td>${iter.fb.toFixed(6)}</td>
+                    <td>${iter.c.toFixed(6)}</td>
+                    <td>${iter.fc.toFixed(6)}</td>
+                    <td>${iter.error.toFixed(6)}</td>
+                `;
+
+                if (iter.converged) {
+                    row.style.backgroundColor = '#d4edda';
+                    row.style.fontWeight = 'bold';
+                }
+            });
+
+            // Show convergence information
+            const lastIteration = iterations[iterations.length - 1];
+            const convergenceDiv = document.getElementById('convergenceInfo');
+            
+            if (lastIteration.converged) {
+                convergenceDiv.innerHTML = `
+                    <div class="convergence-info">
+                        <h4>🎯 Root Found!</h4>
+                        <p><strong>Root:</strong> c = ${lastIteration.root.toFixed(6)}</p>
+                        <p><strong>Function value:</strong> f(${lastIteration.root.toFixed(6)}) = ${lastIteration.rootValue.toFixed(6)}</p>
+                        <p><strong>Converged in:</strong> ${lastIteration.iteration} iterations</p>
+                        <p><strong>Final error:</strong> ${lastIteration.error.toFixed(8)}</p>
+                    </div>
+                `;
+            } else {
+                convergenceDiv.innerHTML = `
+                    <div class="error-message">
+                        <h4>⚠️ Maximum iterations reached</h4>
+                        <p>The method did not converge within ${iterations.length} iterations.</p>
+                        <p><strong>Current approximation:</strong> c = ${lastIteration.c.toFixed(6)}</p>
+                        <p><strong>Current error:</strong> ${lastIteration.error.toFixed(8)}</p>
+                    </div>
+                `;
+            }
+
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            resultsSection.innerHTML = `
+                <div class="error-message">
+                    <h4>❌ Error</h4>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Allow Enter key to trigger calculation
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateSecant();
+            }
+        });
+
+        // Auto-calculate on page load with default values
+        window.addEventListener('load', function() {
+            calculateSecant();
+        });
+    </script>
+</body>
+</html>

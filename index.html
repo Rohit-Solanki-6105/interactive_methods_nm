@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Methods Calculator Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.7;
+        }
+
+        .intro-section {
+            padding: 40px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .intro-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .intro-section p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1em;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .method-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .method-header {
+            padding: 25px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .method-header h3 {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+
+        .method-header .method-type {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .method-content {
+            padding: 25px;
+        }
+
+        .method-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .method-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .method-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+            color: #555;
+        }
+
+        .method-features li:last-child {
+            border-bottom: none;
+        }
+
+        .method-features li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .method-button {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .method-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Method-specific colors */
+        .bisection .method-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .bisection .method-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .secant .method-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .secant .method-button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .false-position .method-header {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        }
+
+        .false-position .method-button {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .footer p {
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .footer .tech-stack {
+            font-size: 0.9em;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .methods-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .intro-section {
+                padding: 30px 20px;
+            }
+        }
+
+        .comparison-section {
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .comparison-table {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Numerical Methods</h1>
+            <p>Root Finding Calculator Suite</p>
+            <div class="subtitle">Interactive implementations of classical numerical methods</div>
+        </div>
+
+        <div class="intro-section">
+            <h2>Welcome to the Numerical Methods Calculator</h2>
+            <p>
+                Explore and compare different root-finding algorithms with our interactive calculators. 
+                Each method provides detailed step-by-step iterations, convergence analysis, and 
+                professional visualizations to help you understand how these fundamental numerical 
+                techniques work.
+            </p>
+        </div>
+
+        <div class="methods-grid" id="methodsGrid">
+            <!-- Bisection Method Card -->
+            <div class="method-card bisection">
+                <div class="method-header">
+                    <h3>Bisection Method</h3>
+                    <div class="method-type">Bracketing Method</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        A reliable root-finding algorithm that repeatedly bisects an interval and selects the subinterval where the function changes sign.
+                    </div>
+                    <ul class="method-features">
+                        <li>Always converges when f(a)×f(b) < 0</li>
+                        <li>Linear convergence rate</li>
+                        <li>Simple and robust implementation</li>
+                        <li>Requires interval with sign change</li>
+                    </ul>
+                    <a href="bi-sectional.html" class="method-button">
+                        � Launch Calculator
+                    </a>
+                </div>
+            </div>
+
+            <!-- Secant Method Card -->
+            <div class="method-card secant">
+                <div class="method-header">
+                    <h3>Secant Method</h3>
+                    <div class="method-type">Open Method</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        An iterative method that uses linear interpolation between two points to approximate the derivative and find roots faster.
+                    </div>
+                    <ul class="method-features">
+                        <li>Superlinear convergence rate</li>
+                        <li>No derivative calculation needed</li>
+                        <li>Faster than bisection method</li>
+                        <li>May diverge with poor initial guesses</li>
+                    </ul>
+                    <a href="secant-method.html" class="method-button">
+                        🚀 Launch Calculator
+                    </a>
+                </div>
+            </div>
+
+            <!-- False Position Method Card -->
+            <div class="method-card false-position">
+                <div class="method-header">
+                    <h3>False Position Method</h3>
+                    <div class="method-type">Hybrid Method</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        Combines the reliability of bisection with the speed of secant method using linear interpolation between bracketing points.
+                    </div>
+                    <ul class="method-features">
+                        <li>Always converges like bisection</li>
+                        <li>Faster convergence than bisection</li>
+                        <li>Uses linear interpolation</li>
+                        <li>Best of both worlds approach</li>
+                    </ul>
+                    <a href="false-position.html" class="method-button">
+                        🚀 Launch Calculator
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Method Comparison</h2>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Convergence Rate</th>
+                            <th>Reliability</th>
+                            <th>Initial Requirements</th>
+                            <th>Best Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bisection</strong></td>
+                            <td>Linear (slow)</td>
+                            <td>Always converges</td>
+                            <td>f(a) × f(b) &lt; 0</td>
+                            <td>When reliability is crucial</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Secant</strong></td>
+                            <td>Superlinear (fast)</td>
+                            <td>May diverge</td>
+                            <td>Two good initial guesses</td>
+                            <td>When speed is important</td>
+                        </tr>
+                        <tr>
+                            <td><strong>False Position</strong></td>
+                            <td>Superlinear (fast)</td>
+                            <td>Always converges</td>
+                            <td>f(a) × f(b) &lt; 0</td>
+                            <td>Best balance of speed & reliability</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Numerical Methods Calculator Suite</p>
+            <div class="tech-stack">Built with HTML5, CSS3, and JavaScript | Interactive Mathematical Computing</div>
+        </div>
+    </div>
+
+    <script>
+        // Add animation effects
+        function addAnimations() {
+            const cards = document.querySelectorAll('.method-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add animations after a short delay
+            setTimeout(addAnimations, 100);
+        });
+
+        // Add smooth scrolling for internal links
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && e.target.href.includes('#')) {
+                e.preventDefault();
+                const targetId = e.target.href.split('#')[1];
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
