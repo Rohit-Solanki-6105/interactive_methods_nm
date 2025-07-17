@@ -185,6 +185,22 @@
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
         }
 
+        .newton-raphson .method-header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .newton-raphson .method-button {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .fixed-point .method-header {
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+        }
+
+        .fixed-point .method-button {
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -356,6 +372,50 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Newton-Raphson Method Card -->
+            <div class="method-card newton-raphson">
+                <div class="method-header">
+                    <h3>Newton-Raphson Method</h3>
+                    <div class="method-type">Open Method</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        A powerful iterative method using derivatives to achieve quadratic convergence, making it one of the fastest root-finding algorithms.
+                    </div>
+                    <ul class="method-features">
+                        <li>Quadratic convergence rate (very fast)</li>
+                        <li>Requires function derivative</li>
+                        <li>Sensitive to initial guess</li>
+                        <li>Best performance when it converges</li>
+                    </ul>
+                    <a href="newton-raphson.html" class="method-button">
+                        🚀 Launch Calculator
+                    </a>
+                </div>
+            </div>
+
+            <!-- Fixed Point Method Card -->
+            <div class="method-card fixed-point">
+                <div class="method-header">
+                    <h3>Fixed Point Method</h3>
+                    <div class="method-type">Successive Approximation</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        An iterative method that finds roots by rearranging f(x) = 0 to x = g(x), then using successive approximations.
+                    </div>
+                    <ul class="method-features">
+                        <li>Simple iteration: x<sub>i+1</sub> = g(x<sub>i</sub>)</li>
+                        <li>Convergence depends on |g'(x)| < 1</li>
+                        <li>Easy to understand and implement</li>
+                        <li>Requires careful choice of g(x)</li>
+                    </ul>
+                    <a href="fixed-point.html" class="method-button">
+                        🔄 Launch Calculator
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="comparison-section">
@@ -392,6 +452,20 @@
                             <td>Always converges</td>
                             <td>f(a) × f(b) &lt; 0</td>
                             <td>Best balance of speed & reliability</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Newton-Raphson</strong></td>
+                            <td>Quadratic (very fast)</td>
+                            <td>May diverge</td>
+                            <td>Good initial guess + f'(x)</td>
+                            <td>When derivative is available & speed is critical</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fixed Point</strong></td>
+                            <td>Linear (depends on g'(x))</td>
+                            <td>Depends on g(x) choice</td>
+                            <td>Good initial guess + |g'(x)| < 1</td>
+                            <td>When equation can be rearranged to x = g(x)</td>
                         </tr>
                     </tbody>
                 </table>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Point Method Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .method-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .method-info h2 {
+            color: #8e44ad;
+            margin-bottom: 15px;
+        }
+
+        .method-info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #8e44ad;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin: 15px 0;
+        }
+
+        .example-box {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #8e44ad;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(142, 68, 173, 0.3);
+        }
+
+        .results-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .results-section h3 {
+            color: #8e44ad;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .results-table {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 600px;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-family: 'Courier New', monospace;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .results-table tr:hover {
+            background: #e8f4f8;
+        }
+
+        .final-result {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #8e44ad;
+            margin-top: 20px;
+        }
+
+        .final-result h4 {
+            color: #8e44ad;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        .convergence-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h5 {
+            color: #8e44ad;
+            margin-bottom: 5px;
+        }
+
+        .info-card .value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-section, .results-section {
+                padding: 20px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Fixed Point Method</h1>
+            <p>Successive Approximation Root Finding</p>
+        </div>
+
+        <div class="method-info">
+            <h2>About Fixed Point Method</h2>
+            <p>
+                The Fixed Point Method (also known as Successive Approximation) is an iterative technique that finds 
+                roots by rearranging the equation f(x) = 0 into the form x = g(x), then using the iteration x<sub>i+1</sub> = g(x<sub>i</sub>). 
+                The method converges to a fixed point where x = g(x).
+            </p>
+            <div class="formula">
+                x<sub>i+1</sub> = g(x<sub>i</sub>)
+            </div>
+            <p>
+                <strong>Convergence Condition:</strong> The method converges if |g'(x)| < 1 near the fixed point. 
+                Choose g(x) carefully to ensure convergence.
+            </p>
+            
+            <div class="example-box">
+                <h4>📝 Example Transformation:</h4>
+                <p><strong>Original equation:</strong> x³ - x - 1 = 0</p>
+                <p><strong>Rearranged to:</strong> x = ∛(x + 1) or x = (x³ - 1)/x + x or x = 1/(x² - 1) + x</p>
+                <p><strong>Choose g(x):</strong> g(x) = (x + 1)^(1/3) for better convergence</p>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <a href="index.html" class="back-btn">← Back to Main Menu</a>
+            
+            <div class="input-group">
+                <label for="gFunction">Iteration Function g(x):</label>
+                <input type="text" id="gFunction" placeholder="e.g., (x + 1)^(1/3)" value="(x + 1)^(1/3)">
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="initialGuess">Initial Guess (x₀):</label>
+                    <input type="number" id="initialGuess" step="any" placeholder="e.g., 1.5" value="1.5">
+                </div>
+
+                <div class="input-group">
+                    <label for="tolerance">Tolerance (E):</label>
+                    <input type="number" id="tolerance" step="any" placeholder="e.g., 0.0001" value="0.0001">
+                </div>
+
+                <div class="input-group">
+                    <label for="maxIterations">Max Iterations:</label>
+                    <input type="number" id="maxIterations" placeholder="e.g., 50" value="50">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateFixedPoint()">🔄 Find Fixed Point</button>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h3>📊 Iteration Results</h3>
+            
+            <div class="results-table">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Iteration (i)</th>
+                            <th>x<sub>i</sub></th>
+                            <th>g(x<sub>i</sub>)</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="convergence-info">
+                <div class="info-card">
+                    <h5>Fixed Point</h5>
+                    <div class="value" id="fixedPoint">-</div>
+                </div>
+                <div class="info-card">
+                    <h5>Iterations</h5>
+                    <div class="value" id="totalIterations">-</div>
+                </div>
+                <div class="info-card">
+                    <h5>Final Error</h5>
+                    <div class="value" id="finalError">-</div>
+                </div>
+                <div class="info-card">
+                    <h5>Convergence</h5>
+                    <div class="value" id="convergenceStatus">-</div>
+                </div>
+            </div>
+
+            <div class="final-result">
+                <h4>📈 Summary</h4>
+                <p id="summaryText">Click calculate to see results...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function evaluateFunction(expression, x) {
+            try {
+                // Replace mathematical functions and operators
+                let expr = expression.toLowerCase()
+                    .replace(/\^/g, '**')
+                    .replace(/sin/g, 'Math.sin')
+                    .replace(/cos/g, 'Math.cos')
+                    .replace(/tan/g, 'Math.tan')
+                    .replace(/ln/g, 'Math.log')
+                    .replace(/log/g, 'Math.log10')
+                    .replace(/sqrt/g, 'Math.sqrt')
+                    .replace(/exp/g, 'Math.exp')
+                    .replace(/abs/g, 'Math.abs')
+                    .replace(/pi/g, 'Math.PI')
+                    .replace(/e(?![a-z])/g, 'Math.E'); // Only replace standalone 'e'
+
+                // Replace x with the actual value
+                expr = expr.replace(/x/g, `(${x})`);
+
+                // Handle implicit multiplication (e.g., 3x becomes 3*(x))
+                expr = expr.replace(/(\d+)(\()/g, '$1*$2');
+                expr = expr.replace(/(\))(\d+)/g, '$1*$2');
+                expr = expr.replace(/(\))(\()/g, '$1*$2');
+
+                // Handle fractional exponents for cube root, etc.
+                expr = expr.replace(/\*\*\s*\(\s*1\s*\/\s*3\s*\)/g, '**(1/3)');
+
+                return eval(expr);
+            } catch (error) {
+                throw new Error(`Invalid expression: ${expression}`);
+            }
+        }
+
+        function fixedPointMethod(gFuncStr, x0, tolerance, maxIter) {
+            const iterations = [];
+            let xi = x0;
+            let iteration = 0;
+
+            try {
+                // Record initial value
+                const gx0 = evaluateFunction(gFuncStr, xi);
+                iterations.push({
+                    iteration: iteration,
+                    xi: xi,
+                    gxi: gx0,
+                    error: 0
+                });
+
+                while (iteration < maxIter) {
+                    const gxi = evaluateFunction(gFuncStr, xi);
+                    const xi1 = gxi;
+                    const error = Math.abs(xi1 - xi);
+
+                    iteration++;
+                    iterations.push({
+                        iteration: iteration,
+                        xi: xi1,
+                        gxi: gxi,
+                        error: error
+                    });
+
+                    if (error < tolerance) {
+                        return {
+                            success: true,
+                            iterations: iterations,
+                            fixedPoint: xi1,
+                            finalError: error,
+                            totalIterations: iteration,
+                            message: `Converged to fixed point ${xi1.toFixed(8)} in ${iteration} iterations.`
+                        };
+                    }
+
+                    // Check for divergence
+                    if (Math.abs(xi1) > 1e10) {
+                        return {
+                            success: false,
+                            iterations: iterations,
+                            fixedPoint: xi1,
+                            finalError: error,
+                            totalIterations: iteration,
+                            message: `Method is diverging. |x| > 10^10. Try a different g(x) or initial guess.`
+                        };
+                    }
+
+                    xi = xi1;
+                }
+
+                return {
+                    success: false,
+                    iterations: iterations,
+                    fixedPoint: xi,
+                    finalError: iterations.length > 1 ? iterations[iterations.length - 1].error : Infinity,
+                    totalIterations: iteration,
+                    message: `Maximum iterations (${maxIter}) reached without convergence. Try increasing iterations or check g(x).`
+                };
+
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message,
+                    iterations: iterations
+                };
+            }
+        }
+
+        function displayResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsBody = document.getElementById('resultsBody');
+            const fixedPoint = document.getElementById('fixedPoint');
+            const totalIterations = document.getElementById('totalIterations');
+            const finalError = document.getElementById('finalError');
+            const convergenceStatus = document.getElementById('convergenceStatus');
+            const summaryText = document.getElementById('summaryText');
+
+            resultsSection.style.display = 'block';
+            resultsBody.innerHTML = '';
+
+            if (result.error) {
+                resultsSection.innerHTML = `
+                    <h3 style="color: #8e44ad; margin-bottom: 20px;">📊 Iteration Results</h3>
+                    <div class="error-message">
+                        <strong>Error:</strong> ${result.error}
+                    </div>
+                `;
+                return;
+            }
+
+            // Populate table
+            result.iterations.forEach((iter, index) => {
+                const row = resultsBody.insertRow();
+                row.innerHTML = `
+                    <td>${iter.iteration}</td>
+                    <td>${iter.xi.toFixed(8)}</td>
+                    <td>${iter.gxi.toFixed(8)}</td>
+                    <td>${iter.error.toFixed(8)}</td>
+                `;
+            });
+
+            // Update summary cards
+            fixedPoint.textContent = result.fixedPoint.toFixed(8);
+            totalIterations.textContent = result.totalIterations;
+            finalError.textContent = result.finalError.toFixed(8);
+            convergenceStatus.textContent = result.success ? 'Converged' : 'Not Converged';
+            convergenceStatus.style.color = result.success ? '#28a745' : '#dc3545';
+
+            // Update summary text
+            summaryText.textContent = result.message;
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateFixedPoint() {
+            const gFuncStr = document.getElementById('gFunction').value.trim();
+            const x0 = parseFloat(document.getElementById('initialGuess').value);
+            const tolerance = parseFloat(document.getElementById('tolerance').value);
+            const maxIter = parseInt(document.getElementById('maxIterations').value);
+
+            // Validation
+            if (!gFuncStr) {
+                alert('Please enter the iteration function g(x).');
+                return;
+            }
+
+            if (isNaN(x0) || isNaN(tolerance) || isNaN(maxIter)) {
+                alert('Please enter valid numeric values for initial guess, tolerance, and max iterations.');
+                return;
+            }
+
+            if (tolerance <= 0) {
+                alert('Tolerance must be positive.');
+                return;
+            }
+
+            if (maxIter <= 0) {
+                alert('Maximum iterations must be positive.');
+                return;
+            }
+
+            try {
+                // Test function evaluation
+                evaluateFunction(gFuncStr, x0);
+            } catch (error) {
+                alert(`Error in function evaluation: ${error.message}`);
+                return;
+            }
+
+            const result = fixedPointMethod(gFuncStr, x0, tolerance, maxIter);
+            displayResults(result);
+        }
+
+        // Add event listeners for Enter key
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateFixedPoint();
+            }
+        });
+
+        // Load example on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus on function input
+            document.getElementById('gFunction').focus();
+        });
+    </script>
+</body>
+</html>

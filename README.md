@@ -5,6 +5,8 @@ An interactive web-based calculator suite for numerical root-finding methods inc
 - **Bisection Method** - Reliable bracketing method with guaranteed convergence
 - **Secant Method** - Fast open method using linear interpolation  
 - **False Position Method** - Hybrid approach combining reliability and speed
+- **Newton-Raphson Method** - Quadratic convergence using derivatives
+- **Fixed Point Method** - Successive approximation using x = g(x) iteration
 
 ## Features
 
@@ -38,6 +40,8 @@ Visit the live site: [https://rohit-solanki-6105.github.io/interactive_methods_n
 ├── bi-sectional.html       # Bisection method calculator
 ├── secant-method.html      # Secant method calculator
 ├── false-position.html     # False position method calculator
+├── newton-raphson.html     # Newton-Raphson method calculator
+├── fixed-point.html        # Fixed point method calculator
 ├── bi-sectional.py         # Python implementation
 └── README.md              # This file
 ```
