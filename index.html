@@ -71,6 +71,55 @@
             margin: 0 auto 30px;
         }
 
+        .search-container {
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .search-results {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .method-card.hidden {
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+
         .methods-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -304,9 +353,20 @@
                 professional visualizations to help you understand how these fundamental numerical 
                 techniques work.
             </p>
+            
+            <div class="search-container">
+                <input type="text" id="methodSearch" class="search-box" placeholder="🔍 Search numerical methods..." autocomplete="off">
+                <span class="search-icon">🔍</span>
+                <div id="searchResults" class="search-results"></div>
+            </div>
         </div>
 
         <div class="methods-grid" id="methodsGrid">
+            <div class="no-results" id="noResults">
+                <h3>🔍 No methods found</h3>
+                <p>Try searching for: "bisection", "newton", "secant", "false position", or "fixed point"</p>
+            </div>
+            
             <!-- Bisection Method Card -->
             <div class="method-card bisection">
                 <div class="method-header">
@@ -479,9 +539,87 @@
     </div>
 
     <script>
+        // Method data for search functionality
+        const methods = [
+            {
+                name: 'Bisection Method',
+                keywords: ['bisection', 'bracketing', 'reliable', 'interval', 'sign change'],
+                element: 'bisection'
+            },
+            {
+                name: 'Secant Method', 
+                keywords: ['secant', 'linear interpolation', 'fast', 'superlinear', 'open'],
+                element: 'secant'
+            },
+            {
+                name: 'False Position Method',
+                keywords: ['false position', 'regula falsi', 'hybrid', 'bracketing', 'interpolation'],
+                element: 'false-position'
+            },
+            {
+                name: 'Newton-Raphson Method',
+                keywords: ['newton', 'raphson', 'derivative', 'quadratic', 'tangent', 'fast'],
+                element: 'newton-raphson'
+            },
+            {
+                name: 'Fixed Point Method',
+                keywords: ['fixed point', 'successive approximation', 'iteration', 'convergence'],
+                element: 'fixed-point'
+            }
+        ];
+
+        // Search functionality
+        function searchMethods() {
+            const searchTerm = document.getElementById('methodSearch').value.toLowerCase().trim();
+            const searchResults = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            const methodCards = document.querySelectorAll('.method-card:not(.no-results)');
+            
+            if (searchTerm === '') {
+                // Show all methods when search is empty
+                methodCards.forEach(card => {
+                    card.classList.remove('hidden');
+                });
+                searchResults.textContent = '';
+                noResults.style.display = 'none';
+                return;
+            }
+
+            let visibleCount = 0;
+            let matchedMethods = [];
+
+            methodCards.forEach(card => {
+                const method = methods.find(m => card.classList.contains(m.element));
+                if (method) {
+                    const isMatch = method.name.toLowerCase().includes(searchTerm) ||
+                                  method.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm));
+                    
+                    if (isMatch) {
+                        card.classList.remove('hidden');
+                        matchedMethods.push(method.name);
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Update search results text
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+                searchResults.textContent = '';
+            } else {
+                noResults.style.display = 'none';
+                const resultText = visibleCount === methods.length 
+                    ? 'Showing all methods' 
+                    : `Found ${visibleCount} method${visibleCount !== 1 ? 's' : ''}: ${matchedMethods.join(', ')}`;
+                searchResults.textContent = resultText;
+            }
+        }
+
         // Add animation effects
         function addAnimations() {
-            const cards = document.querySelectorAll('.method-card');
+            const cards = document.querySelectorAll('.method-card:not(.hidden):not(.no-results)');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
@@ -496,8 +634,22 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
+            // Add search event listener
+            const searchBox = document.getElementById('methodSearch');
+            searchBox.addEventListener('input', searchMethods);
+            searchBox.addEventListener('keyup', searchMethods);
+            
             // Add animations after a short delay
             setTimeout(addAnimations, 100);
+            
+            // Add search box focus animation
+            searchBox.addEventListener('focus', () => {
+                searchBox.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            searchBox.addEventListener('blur', () => {
+                searchBox.parentElement.style.transform = 'scale(1)';
+            });
         });
 
         // Add smooth scrolling for internal links
@@ -509,6 +661,16 @@
                 if (targetElement) {
                     targetElement.scrollIntoView({ behavior: 'smooth' });
                 }
+            }
+        });
+
+        // Clear search when clicking outside
+        document.addEventListener('click', (e) => {
+            const searchContainer = document.querySelector('.search-container');
+            if (!searchContainer.contains(e.target)) {
+                // Optional: Clear search when clicking outside (uncomment if desired)
+                // document.getElementById('methodSearch').value = '';
+                // searchMethods();
             }
         });
     </script>
