@@ -223,6 +223,8 @@
             color: #856404;
         }
 
+
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -341,11 +343,13 @@
         // Function to safely evaluate mathematical expressions
         function evaluateFunction(funcStr, x) {
             try {
-                // Replace x with the actual value
-                let expression = funcStr.replace(/x/g, `(${x})`);
+                // Replace x with the actual value and handle mathematical functions
+                let expression = funcStr.toLowerCase();
                 
-                // Replace mathematical notations
-                expression = expression.replace(/\^/g, '**'); // Exponentiation
+                // Replace x with the value
+                expression = expression.replace(/x/g, x);
+                
+                // Replace mathematical functions with Math object equivalents
                 expression = expression.replace(/sin/g, 'Math.sin');
                 expression = expression.replace(/cos/g, 'Math.cos');
                 expression = expression.replace(/tan/g, 'Math.tan');
@@ -354,12 +358,22 @@
                 expression = expression.replace(/sqrt/g, 'Math.sqrt');
                 expression = expression.replace(/exp/g, 'Math.exp');
                 expression = expression.replace(/abs/g, 'Math.abs');
+                expression = expression.replace(/pi/g, 'Math.PI');
+                expression = expression.replace(/e(?![0-9])/g, 'Math.E');
                 
-                // Use Function constructor for safer evaluation
-                const func = new Function('Math', `return ${expression}`);
-                return func(Math);
+                // Replace ^ with ** for exponentiation
+                expression = expression.replace(/\^/g, '**');
+                
+                // Use eval for direct evaluation
+                const result = eval(expression);
+                
+                if (isNaN(result) || !isFinite(result)) {
+                    throw new Error('Function evaluation resulted in NaN or Infinity');
+                }
+                
+                return result;
             } catch (error) {
-                throw new Error('Invalid function expression');
+                throw new Error(`Invalid function expression: ${error.message}`);
             }
         }
 

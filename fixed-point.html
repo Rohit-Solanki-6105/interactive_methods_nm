@@ -382,34 +382,37 @@
     <script>
         function evaluateFunction(expression, x) {
             try {
-                // Replace mathematical functions and operators
-                let expr = expression.toLowerCase()
-                    .replace(/\^/g, '**')
-                    .replace(/sin/g, 'Math.sin')
-                    .replace(/cos/g, 'Math.cos')
-                    .replace(/tan/g, 'Math.tan')
-                    .replace(/ln/g, 'Math.log')
-                    .replace(/log/g, 'Math.log10')
-                    .replace(/sqrt/g, 'Math.sqrt')
-                    .replace(/exp/g, 'Math.exp')
-                    .replace(/abs/g, 'Math.abs')
-                    .replace(/pi/g, 'Math.PI')
-                    .replace(/e(?![a-z])/g, 'Math.E'); // Only replace standalone 'e'
-
-                // Replace x with the actual value
-                expr = expr.replace(/x/g, `(${x})`);
-
-                // Handle implicit multiplication (e.g., 3x becomes 3*(x))
-                expr = expr.replace(/(\d+)(\()/g, '$1*$2');
-                expr = expr.replace(/(\))(\d+)/g, '$1*$2');
-                expr = expr.replace(/(\))(\()/g, '$1*$2');
-
-                // Handle fractional exponents for cube root, etc.
-                expr = expr.replace(/\*\*\s*\(\s*1\s*\/\s*3\s*\)/g, '**(1/3)');
-
-                return eval(expr);
+                // Replace x with the actual value and handle mathematical functions
+                let expr = expression.toLowerCase();
+                
+                // Replace x with the value
+                expr = expr.replace(/x/g, x);
+                
+                // Replace mathematical functions with Math object equivalents
+                expr = expr.replace(/sin/g, 'Math.sin');
+                expr = expr.replace(/cos/g, 'Math.cos');
+                expr = expr.replace(/tan/g, 'Math.tan');
+                expr = expr.replace(/ln/g, 'Math.log');
+                expr = expr.replace(/log/g, 'Math.log10');
+                expr = expr.replace(/sqrt/g, 'Math.sqrt');
+                expr = expr.replace(/exp/g, 'Math.exp');
+                expr = expr.replace(/abs/g, 'Math.abs');
+                expr = expr.replace(/pi/g, 'Math.PI');
+                expr = expr.replace(/e(?![0-9])/g, 'Math.E');
+                
+                // Replace ^ with ** for exponentiation
+                expr = expr.replace(/\^/g, '**');
+                
+                // Use eval for direct evaluation
+                const result = eval(expr);
+                
+                if (isNaN(result) || !isFinite(result)) {
+                    throw new Error('Function evaluation resulted in NaN or Infinity');
+                }
+                
+                return result;
             } catch (error) {
-                throw new Error(`Invalid expression: ${expression}`);
+                throw new Error(`Invalid function expression: ${error.message}`);
             }
         }
 
