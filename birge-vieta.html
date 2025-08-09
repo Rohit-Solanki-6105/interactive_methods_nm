@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birge Vieta Method for Polynomial Root Finding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .input-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .method-info {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .method-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .method-info p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .input-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1em;
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #ff7b7b;
+            box-shadow: 0 0 0 3px rgba(255, 123, 123, 0.1);
+        }
+
+        .input-help {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .calculate-button {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 123, 123, 0.3);
+        }
+
+        .results-section {
+            padding: 30px;
+            background: white;
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h3 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .results-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff7b7b;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .results-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .iteration-number {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .convergence-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .convergence-info h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .final-result {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .final-result h4 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .error-message h4 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-section, .results-section {
+                padding: 20px;
+            }
+
+            .coefficients-input {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+
+            .results-table th, .results-table td {
+                padding: 8px 6px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Birge Vieta Method</h1>
+            <p>Polynomial Root Finding & Synthetic Division</p>
+        </div>
+
+        <div class="input-section">
+            <div class="method-info">
+                <h3>📚 About Birge Vieta Method</h3>
+                <p>
+                    The Birge Vieta method is a numerical technique used for finding roots of polynomial equations 
+                    using synthetic division. It's particularly effective for polynomials and provides a systematic 
+                    approach to evaluate polynomials and their derivatives using Horner's method combined with Newton-Raphson iteration.
+                </p>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="polynomial">Polynomial Function P(x)</label>
+                    <input type="text" id="polynomial" placeholder="x^4-3*x^3+3*x^2-3*x+2" value="x^4-3*x^3+3*x^2-3*x+2">
+                    <div class="input-help">Enter polynomial (e.g., x^3-2*x^2+x-1 or x^4-3*x^3+3*x^2-3*x+2)</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="initialGuess">Initial Guess (x₀)</label>
+                    <input type="number" id="initialGuess" value="0.5" step="0.1">
+                    <div class="input-help">Starting value for the iteration</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="tolerance">Tolerance (ε)</label>
+                    <input type="number" id="tolerance" value="0.00001" step="0.00001" min="0.00001">
+                    <div class="input-help">Convergence criteria (e.g., 0.00001 for 5 decimal places)</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="maxIterations">Maximum Iterations</label>
+                    <input type="number" id="maxIterations" value="50" min="1" max="1000">
+                    <div class="input-help">Maximum number of iterations allowed</div>
+                </div>
+            </div>
+
+            <button class="calculate-button" onclick="calculateBirgeVieta()">
+                🚀 Calculate Root
+            </button>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h3 id="resultsTitle">Birge Vieta Method Results</h3>
+                <div class="results-info" id="resultsInfo">
+                    <!-- Results info will be populated here -->
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Iteration</th>
+                            <th>x<sub>i</sub></th>
+                            <th>P(x<sub>i</sub>)</th>
+                            <th>P'(x<sub>i</sub>)</th>
+                            <th>x<sub>i+1</sub></th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="convergenceInfo" class="convergence-info">
+                <!-- Convergence information will be populated here -->
+            </div>
+
+            <div class="final-result">
+                <h4>📈 Summary</h4>
+                <p id="summaryText">Click calculate to see results...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to safely evaluate mathematical expressions
+        function evaluateFunction(funcStr, x) {
+            try {
+                // Replace x with the actual value and handle mathematical functions
+                let expression = funcStr.toLowerCase();
+                
+                // Replace x with the value
+                expression = expression.replace(/x/g, x);
+                
+                // Replace mathematical functions with Math object equivalents
+                expression = expression.replace(/sin/g, 'Math.sin');
+                expression = expression.replace(/cos/g, 'Math.cos');
+                expression = expression.replace(/tan/g, 'Math.tan');
+                expression = expression.replace(/ln/g, 'Math.log');
+                expression = expression.replace(/log/g, 'Math.log10');
+                expression = expression.replace(/sqrt/g, 'Math.sqrt');
+                expression = expression.replace(/exp/g, 'Math.exp');
+                expression = expression.replace(/abs/g, 'Math.abs');
+                expression = expression.replace(/pi/g, 'Math.PI');
+                expression = expression.replace(/e(?![0-9])/g, 'Math.E');
+                
+                // Replace ^ with ** for exponentiation
+                expression = expression.replace(/\^/g, '**');
+                
+                // Use eval for direct evaluation
+                const result = eval(expression);
+                
+                if (isNaN(result) || !isFinite(result)) {
+                    throw new Error('Function evaluation resulted in NaN or Infinity');
+                }
+                
+                return result;
+            } catch (error) {
+                throw new Error(`Invalid function expression: ${error.message}`);
+            }
+        }
+
+        // Calculate derivative numerically using central difference
+        function evaluateDerivative(funcStr, x, h = 1e-8) {
+            try {
+                const f_plus = evaluateFunction(funcStr, x + h);
+                const f_minus = evaluateFunction(funcStr, x - h);
+                return (f_plus - f_minus) / (2 * h);
+            } catch (error) {
+                throw new Error(`Error calculating derivative: ${error.message}`);
+            }
+        }
+
+        // Birge Vieta method implementation (Newton-Raphson for polynomials)
+        function birgeVietaMethod(funcStr, x0, tolerance, maxIter) {
+            const iterations = [];
+            let x = x0;
+
+            for (let i = 0; i < maxIter; i++) {
+                // Evaluate polynomial and its derivative
+                const px = evaluateFunction(funcStr, x);
+                const dpx = evaluateDerivative(funcStr, x);
+
+                // Check if derivative is zero
+                if (Math.abs(dpx) < 1e-12) {
+                    throw new Error("Derivative is zero. Method fails.");
+                }
+
+                // Newton-Raphson step
+                const x_new = x - (px / dpx);
+                const error = Math.abs(x_new - x);
+
+                iterations.push({
+                    iteration: i + 1,
+                    x: x,
+                    px: px,
+                    dpx: dpx,
+                    x_new: x_new,
+                    error: error
+                });
+
+                // Check for convergence
+                if (error < tolerance) {
+                    return {
+                        success: true,
+                        iterations: iterations,
+                        root: x_new,
+                        finalError: error,
+                        totalIterations: i + 1,
+                        message: `Converged to root ${x_new.toFixed(8)} in ${i + 1} iterations.`
+                    };
+                }
+
+                x = x_new;
+            }
+
+            return {
+                success: false,
+                iterations: iterations,
+                root: x,
+                finalError: iterations[iterations.length - 1].error,
+                totalIterations: maxIter,
+                message: `Did not converge after ${maxIter} iterations. Last approximation: ${x.toFixed(5)}`
+            };
+        }
+
+        // Display results
+        function displayResults(result, funcStr, x0, tolerance) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+
+            // Update results header
+            document.getElementById('resultsTitle').textContent = `Birge Vieta Method Results for P(x) = ${funcStr}`;
+            document.getElementById('resultsInfo').innerHTML = `
+                <strong>Initial guess:</strong> x₀ = ${x0}<br>
+                <strong>Tolerance (ε):</strong> ${tolerance}<br>
+                <strong>Total iterations:</strong> ${result.iterations.length}<br>
+                <strong>Status:</strong> ${result.success ? 'Converged ✓' : 'Not Converged ✗'}
+            `;
+
+            // Populate iteration table
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            result.iterations.forEach((iter, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="iteration-number">${iter.iteration}</td>
+                    <td>${iter.x.toFixed(5)}</td>
+                    <td>${iter.px.toFixed(5)}</td>
+                    <td>${iter.dpx.toFixed(5)}</td>
+                    <td>${iter.x_new.toFixed(5)}</td>
+                    <td>${iter.error.toFixed(5)}</td>
+                `;
+            });
+
+            // Display convergence info
+            const convergenceInfo = document.getElementById('convergenceInfo');
+            if (result.success) {
+                convergenceInfo.innerHTML = `
+                    <h4>✅ Convergence Achieved</h4>
+                    <p><strong>Root found:</strong> x = ${result.root.toFixed(5)}</p>
+                    <p><strong>Function value at root:</strong> P(${result.root.toFixed(5)}) = ${evaluateFunction(funcStr, result.root).toFixed(5)}</p>
+                    <p><strong>Final error:</strong> ${result.finalError.toFixed(5)}</p>
+                    <p><strong>Iterations required:</strong> ${result.totalIterations}</p>
+                    <p><strong>Root to 5 decimal places:</strong> ${result.root.toFixed(5)}</p>
+                `;
+                convergenceInfo.style.background = '#d4edda';
+                convergenceInfo.style.borderColor = '#c3e6cb';
+                convergenceInfo.style.color = '#155724';
+            } else {
+                convergenceInfo.innerHTML = `
+                    <h4>❌ Convergence Not Achieved</h4>
+                    <p><strong>Last approximation:</strong> x = ${result.root.toFixed(5)}</p>
+                    <p><strong>Final error:</strong> ${result.finalError.toFixed(5)}</p>
+                    <p><strong>Iterations completed:</strong> ${result.totalIterations}</p>
+                    <p><strong>Suggestion:</strong> Try a different initial guess or increase the maximum iterations.</p>
+                `;
+                convergenceInfo.style.background = '#f8d7da';
+                convergenceInfo.style.borderColor = '#f5c6cb';
+                convergenceInfo.style.color = '#721c24';
+            }
+
+            // Update summary
+            document.getElementById('summaryText').textContent = result.message;
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Main calculation function
+        function calculateBirgeVieta() {
+            try {
+                // Get input values
+                const funcStr = document.getElementById('polynomial').value.trim();
+                const x0 = parseFloat(document.getElementById('initialGuess').value);
+                const tolerance = parseFloat(document.getElementById('tolerance').value);
+                const maxIter = parseInt(document.getElementById('maxIterations').value);
+
+                // Validate inputs
+                if (!funcStr) {
+                    throw new Error('Please enter a polynomial function');
+                }
+                if (isNaN(x0) || isNaN(tolerance) || isNaN(maxIter)) {
+                    throw new Error('Please enter valid numbers for all fields');
+                }
+                if (tolerance <= 0) {
+                    throw new Error('Tolerance must be positive');
+                }
+                if (maxIter <= 0) {
+                    throw new Error('Maximum iterations must be positive');
+                }
+
+                // Test function evaluation
+                try {
+                    evaluateFunction(funcStr, x0);
+                } catch (error) {
+                    throw new Error('Invalid polynomial function. Please check your syntax.');
+                }
+
+                // Run Birge Vieta method
+                const result = birgeVietaMethod(funcStr, x0, tolerance, maxIter);
+
+                // Display results
+                displayResults(result, funcStr, x0, tolerance);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            resultsSection.innerHTML = `
+                <div class="results-header">
+                    <h3>⚠️ Calculation Error</h3>
+                </div>
+                <div class="error-message">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🚫</div>
+                        <div>
+                            <h4 style="margin: 0; color: white;">Input Validation Failed</h4>
+                            <p style="margin: 5px 0 0 0; opacity: 0.9;">Please check your inputs and try again</p>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <p style="margin: 0; font-weight: 500;">${message}</p>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
+                        <p style="margin: 0; font-size: 0.9em; opacity: 0.8;">
+                            <strong>Common Issues:</strong><br>
+                            • Enter polynomial using standard notation (e.g., x^3-2*x^2+x-1)<br>
+                            • Use * for multiplication between coefficients and variables<br>
+                            • Use ^ for exponentiation (e.g., x^2 not x²)<br>
+                            • Choose initial guess close to expected root<br>
+                            • Tolerance must be positive
+                        </p>
+                    </div>
+                </div>
+            `;
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

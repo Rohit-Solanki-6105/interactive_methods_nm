@@ -543,22 +543,22 @@
 
             // Validation
             if (!gFuncStr) {
-                alert('Please enter the iteration function g(x).');
+                showError('Please enter the iteration function g(x).');
                 return;
             }
 
             if (isNaN(x0) || isNaN(tolerance) || isNaN(maxIter)) {
-                alert('Please enter valid numeric values for initial guess, tolerance, and max iterations.');
+                showError('Please enter valid numeric values for initial guess, tolerance, and max iterations.');
                 return;
             }
 
             if (tolerance <= 0) {
-                alert('Tolerance must be positive.');
+                showError('Tolerance must be positive.');
                 return;
             }
 
             if (maxIter <= 0) {
-                alert('Maximum iterations must be positive.');
+                showError('Maximum iterations must be positive.');
                 return;
             }
 
@@ -566,12 +566,44 @@
                 // Test function evaluation
                 evaluateFunction(gFuncStr, x0);
             } catch (error) {
-                alert(`Error in function evaluation: ${error.message}`);
+                showError(`Error in function evaluation: ${error.message}`);
                 return;
             }
 
             const result = fixedPointMethod(gFuncStr, x0, tolerance, maxIter);
             displayResults(result);
+        }
+
+        function showError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            resultsSection.innerHTML = `
+                <div class="results-header">
+                    <h3>⚠️ Calculation Error</h3>
+                </div>
+                <div class="error-message">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🚫</div>
+                        <div>
+                            <h4 style="margin: 0; color: white;">Input Validation Failed</h4>
+                            <p style="margin: 5px 0 0 0; opacity: 0.9;">Please check your inputs and try again</p>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <p style="margin: 0; font-weight: 500;">${message}</p>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
+                        <p style="margin: 0; font-size: 0.9em; opacity: 0.8;">
+                            <strong>Common Issues:</strong><br>
+                            • Enter g(x) function (rearranged form of original equation)<br>
+                            • Check function syntax (use * for multiplication)<br>
+                            • Tolerance must be positive<br>
+                            • Ensure |g'(x)| < 1 for convergence
+                        </p>
+                    </div>
+                </div>
+            `;
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Add event listeners for Enter key

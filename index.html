@@ -250,6 +250,14 @@
             background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
         }
 
+        .birge-vieta .method-header {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+        }
+
+        .birge-vieta .method-button {
+            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -476,6 +484,28 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Birge Vieta Method Card -->
+            <div class="method-card birge-vieta">
+                <div class="method-header">
+                    <h3>Birge Vieta Method</h3>
+                    <div class="method-type">Polynomial Method</div>
+                </div>
+                <div class="method-content">
+                    <div class="method-description">
+                        A specialized method for finding roots of polynomial equations using synthetic division and Newton-Raphson iteration.
+                    </div>
+                    <ul class="method-features">
+                        <li>Efficient for polynomial equations</li>
+                        <li>Uses synthetic division technique</li>
+                        <li>Combines Horner's method with Newton-Raphson</li>
+                        <li>Ideal for polynomial root finding</li>
+                    </ul>
+                    <a href="birge-vieta.html" class="method-button">
+                        🎯 Launch Calculator
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="comparison-section">
@@ -527,6 +557,13 @@
                             <td>Good initial guess + |g'(x)| < 1</td>
                             <td>When equation can be rearranged to x = g(x)</td>
                         </tr>
+                        <tr>
+                            <td><strong>Birge Vieta</strong></td>
+                            <td>Quadratic (very fast)</td>
+                            <td>Reliable for polynomials</td>
+                            <td>Polynomial coefficients + initial guess</td>
+                            <td>When solving polynomial equations efficiently</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -565,6 +602,11 @@
                 name: 'Fixed Point Method',
                 keywords: ['fixed point', 'successive approximation', 'iteration', 'convergence'],
                 element: 'fixed-point'
+            },
+            {
+                name: 'Birge Vieta Method',
+                keywords: ['birge vieta', 'polynomial', 'synthetic division', 'horner', 'polynomial root'],
+                element: 'birge-vieta'
             }
         ];
 

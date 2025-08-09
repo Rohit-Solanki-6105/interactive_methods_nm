@@ -523,11 +523,32 @@
             const resultsSection = document.getElementById('resultsSection');
             resultsSection.style.display = 'block';
             resultsSection.innerHTML = `
+                <div class="results-header">
+                    <h3>⚠️ Calculation Error</h3>
+                </div>
                 <div class="error-message">
-                    <h4>❌ Error</h4>
-                    <p>${message}</p>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🚫</div>
+                        <div>
+                            <h4 style="margin: 0; color: white;">Input Validation Failed</h4>
+                            <p style="margin: 5px 0 0 0; opacity: 0.9;">Please check your inputs and try again</p>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <p style="margin: 0; font-weight: 500;">${message}</p>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
+                        <p style="margin: 0; font-size: 0.9em; opacity: 0.8;">
+                            <strong>Common Issues:</strong><br>
+                            • Initial guesses a and b must be different<br>
+                            • Check function syntax (use * for multiplication)<br>
+                            • Tolerance must be positive<br>
+                            • Try different initial guesses if method diverges
+                        </p>
+                    </div>
                 </div>
             `;
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Allow Enter key to trigger calculation
